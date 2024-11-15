@@ -1,39 +1,11 @@
 <?php
 
-if (!function_exists('assertEqual')) {
-    function assertEqual($actual, $expected, $message)
-    {
-        if (is_numeric($actual) && is_numeric($expected)) {
-            $actual = round($actual, 2);
-            $expected = round($expected, 2);
-        }
-
-        if ($actual == $expected) {
-            echo "[PASS] $message\n";
-        } else {
-            echo "[FAIL] $message: Expected $expected, got $actual\n";
-        }
-    }
-}
-
-// Original getGrades function from view_grades.php
-function getGrades($conn)
+function mock_getGrades($mockData)
 {
-    $grades = [];
-    $sql = "SELECT s.name, g.homework_avg, g.quiz_avg, g.midterm, g.final_project, g.final_grade 
-            FROM students s
-            JOIN grades g ON s.student_id = g.student_id";
-    $result = $conn->query($sql);
-
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $grades[] = $row;
-        }
-    }
-    return $grades;
+    return $mockData;
 }
 
-// Mock Data Provider
+// Test Data Provider
 function gradeDataProvider()
 {
     yield 'single grade entry' => [
@@ -60,17 +32,11 @@ function gradeDataProvider()
     ];
 }
 
-// Mock function to simulate the getGrades function without database
-function mock_getGrades($mockData)
-{
-    return $mockData;
-}
-
-// Tests
+// Unit Test for getGrades
 function test_get_grades_with_data_provider()
 {
     foreach (gradeDataProvider() as $description => [$mockData, $expectedCount, $expectedLastName]) {
-        // Use mock_getGrades to simulate database query result
+        // Use mock_getGrades to simulate the result of getGrades
         $grades = mock_getGrades($mockData);
 
         // Assertions
